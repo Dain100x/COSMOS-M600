@@ -1,0 +1,16 @@
+[gcode_macro FILAMENT_RESUME]
+gcode:
+    _CLOSE_PROMPT
+
+    {% set target = printer["gcode_macro M600"].old_temp|float %}
+
+    M109 S{target}
+
+    M83
+    G92 E0
+    G1 E-0.5 F1800
+
+    M729
+
+    RESTORE_GCODE_STATE NAME=M600_state
+    RESUME
