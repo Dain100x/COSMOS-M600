@@ -1,0 +1,27 @@
+[gcode_macro FILAMENT_LOAD]
+gcode:
+
+    {% set m600_temp = printer["gcode_macro M600"].old_temp|default(0)|float %}
+
+    {% if m600_temp > 0 %}
+        {% set target = m600_temp %}
+    {% else %}
+        {% set target = params.EXTRUDER_TEMP|default(250)|float %}
+    {% endif %}
+
+    M109 S{target}
+
+    LOAD_FILAMENT EXTRUDER_TEMP={target}
+
+    M83
+    G92 E0
+    G1 E15 F300
+    G1 E5 F120
+    G1 E-0.8 F1800
+
+    M729
+
+    RESPOND TYPE=command MSG="action:prompt_begin Resume Print"
+    RESPOND TYPE=command MSG="action:prompt_text Resume print?"
+    RESPOND TYPE=command MSG="action:prompt_footer_button Resume|FILAMENT_RESUME"
+    RESPOND TYPE=command MSG="action:prompt_show"
